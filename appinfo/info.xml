@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<info>
+	<id>tasksplus</id>
+	<name>Tasks Plus</name>
+	<licence>AGPL</licence>
+	<author>Döll Sebastian</author>
+	<shipped>false</shipped>
+	<description>The tasks+ apps comes with a lot of improvements to have more options to work with tasks. The tasks+ app need calendar+ app before installed!</description>
+	<namespace>TasksPlus</namespace>
+	<website>https://github.com/libasys/ownCloud-8.1-TasksPlus</website>
+	<version>1.0.0</version>
+	<category>productivity</category>
+	<default_enable/>
+	<public>
+		<todo>sharetodo.php</todo>
+	</public>
+	<dependencies>
+		<php min-version="5.4" max-version="5.6"/>
+		<owncloud min-version="8.1" max-version="8.2"/>
+	</dependencies>	
+</info>

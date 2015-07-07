@@ -1,0 +1,150 @@
+body{
+	background:#fff;
+}
+#controls{
+	top:44px;
+	background:#fff;
+}
+
+#leftcontent{
+	top:88px;
+}
+.chzn-container{
+	margin-top:10px;
+}
+#datepickerNav{
+	width:250px;
+}
+#leftcontent{
+	width:255px;
+}
+#leftcontentInner{
+	position:relative;
+	top:0px;
+	padding:0;
+	margin:0;
+}
+footer{
+	position:absolute;
+	bottom:0;
+	width:100%;
+	text-align:center;
+}
+.leftControls{
+	position:relative;
+	float:left;
+	width:16%;
+	
+	display:block;
+	
+}
+#eventPublic i.ioc{
+	font-size:16px;
+	margin-right:5px;
+}
+.centerControls{
+	position:relative;
+	left:22%;
+	float:left;
+	
+	width:68%;
+	text-align:center;
+	display:block;
+	
+}
+.rightControls{
+	position:absolute;
+	float:left;
+	width:130px;
+	right:0;
+	display:block;
+	text-align:right;
+	
+}
+
+.header-right{
+	
+	height:30px;
+	margin:0;
+	padding:0;
+	position:relative;
+	top:5px;
+	right:10px;
+	float:right;
+}
+
+.header-right a{
+	border:1px solid #ccc;
+	background:transparent;
+	color:#fff;
+}
+
+.header-right a:hover{
+	border:1px solid #ccc;
+	background:black;
+	color:#fff;
+}
+
+#eventPublic{
+	top:88px;
+	position:relative;
+	display:block;
+	width:30%;
+	margin-left:auto;
+	margin-right:auto;
+	font-size:14px;
+}
+#eventPublic .cOuter{
+	width:100%;
+	background:#f4f4f4;
+	display:block;
+	float:left;
+	height:16px;
+	border-radius:8px;
+}
+#eventPublic .cInner{
+	display:block;
+	float:left;
+	margin-top:1px;
+	height:14px;
+	border-radius:8px;
+	background:#406618;
+	color:#fff;
+	font-size:12px;
+	line-height:15px;
+	text-align:center;
+}
+#eventPublic .noticeShareShow{
+	display:block;
+	width:96%;
+	float:left;
+	min-height:50px;
+	line-height:20px;
+	border-radius:8px;
+	border:1px solid #ccc;
+	padding:5px;
+}
+
+#eventPublicInner{
+	position:relative;
+	display:block;
+	width:90%;
+	margin-left:auto;
+	margin-right:auto;
+	border:1px solid #ccc;
+	padding:10px;
+	border-radius:8px;
+	box-shadow:0 0 1em rgba(0, 0, 0, .5);
+	min-height:300px;
+	min-width:300px;
+}
+.shareevent tr:hover{
+	background-color:transparent;
+}
+th.leftDescr{
+	width:120px;
+	line-height:24px;
+}
+.shareevent a{
+	text-decoration:underline;
+}
