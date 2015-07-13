@@ -222,16 +222,22 @@ class Timeline{
 			                              <span class="colorCal" style="margin-top:6px;background-color:'.$this->aCalendar[$taskInfo['calendarid']]['calendarcolor'].';">&nbsp;</span>
 			                              <input class="inputTasksRow regular-checkbox" type="checkbox" id="task-val-'.$taskInfo['id'].'" /><label style="float:left;margin-right:5px;" for="task-val-'.$taskInfo['id'].'"></label> '.$dateTask.'
 			                              </li>';
+										  
+					$bToday=false;
+					$bTommorow=false;	
+					$bActWeek=false;	
+					$bMissed=false;
+					$bCommingSoon=false;			  
 					if($dtstart){
 						$dtstartTmp = $dtstart->getDateTime()->format('d.m.Y');
 						$dtstart = strtotime($dtstartTmp); 
 						
-							$bToday=false;
+							
 							if($dtstart == $today){
 								$this->taskOutPutbyTime['today'].=$taskOutput;
 								$bToday=true;
 							}
-							$bTommorow=false;
+							
 							if($dtstart==$tomorrow){
 								$this->taskOutPutbyTime['tomorrow'].=$taskOutput;
 								$bTommorow=true;
@@ -242,7 +248,7 @@ class Timeline{
 								$bActWeek=true;
 							}
 							$bMissed=false;
-							if($dtstart<$today){
+							if($dtstart < $today){
 								$this->taskOutPutbyTime['missed'].=$taskOutput;
 								$bMissed=true;
 							}
@@ -263,20 +269,20 @@ class Timeline{
 								$bCheck=true;
 							}
 							
-							if($due==$tomorrow && !$bTommorow){
+							if($due == $tomorrow && !$bTommorow){
 								$this->taskOutPutbyTime['tomorrow'].=$taskOutput;
 								$bCheck=true;
 							}
-							if($due>=$beginnWeek && $due<=$endWeek && !$bCheck && !$bActWeek){
-								$this->taskOutPutbyTime['week'].=$taskOutput;
+							if($due >= $beginnWeek && $due <= $endWeek && !$bCheck && !$bActWeek){
+								$this->taskOutPutbyTime['week'].= $taskOutput;
 							}
 							
-							if($due<$today && !$bMissed){
-								$this->taskOutPutbyTime['missed'].=$taskOutput;
+							if($due < $today && !$bMissed){
+								$this->taskOutPutbyTime['missed'].= $taskOutput;
 							}
 							
 							if($due>$endWeek && !$bCommingSoon){
-								$this->taskOutPutbyTime['commingsoon'].=$taskOutput;
+								$this->taskOutPutbyTime['commingsoon'].= $taskOutput;
 							}
 					   }
 

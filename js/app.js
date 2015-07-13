@@ -51,6 +51,9 @@ OC.TasksPlus = {
 				if (sTimeMode == 'daysbefore') {
 					sResult = '-PT' + sTimeInput + 'D';
 				}
+				if (sTimeMode == 'weeksbefore') {
+					sResult = '-PT' + sTimeInput + 'W';
+				}
 				if (sTimeMode == 'minutesafter') {
 					sResult = '+PT' + sTimeInput + 'M';
 				}
@@ -59,6 +62,9 @@ OC.TasksPlus = {
 				}
 				if (sTimeMode == 'daysafter') {
 					sResult = '+PT' + sTimeInput + 'D';
+				}
+				if (sTimeMode == 'weeksafter') {
+					sResult = '+PT' + sTimeInput + 'W';
 				}
 				sResult = 'TRIGGER:' + sResult;
 			}
@@ -98,6 +104,9 @@ OC.TasksPlus = {
 				//before
 				var sTemp = sReminder.split('-PT');
 				var sTempTF = sTemp[1].substring((sTemp[1].length - 1));
+				if (sTempTF === 'S') {
+					sReminderTxt = t(OC.TasksPlus.calendarAppName, 'Seconds before');
+				}
 				if (sTempTF === 'M') {
 					sReminderTxt = t(OC.TasksPlus.calendarAppName, 'Minutes before');
 				}
@@ -115,6 +124,9 @@ OC.TasksPlus = {
 			} else if (sReminder.indexOf('+PT') !== -1) {
 				var sTemp = sReminder.split('+PT');
 				var sTempTF = sTemp[1].substring((sTemp[1].length - 1));
+				if (sTempTF === 'S') {
+					sReminderTxt = t(OC.TasksPlus.calendarAppName, 'Seconds after');
+				}
 				if (sTempTF === 'M') {
 					sReminderTxt = t(OC.TasksPlus.calendarAppName, 'Minutes after');
 				}
@@ -132,6 +144,7 @@ OC.TasksPlus = {
 			} else {
 				//onDate
 				sReminderTxt = t(OC.TasksPlus.calendarAppName, 'on');
+				//alert(sReminder);
 				var sTemp = sReminder.split('DATE-TIME:');
 				sDateTime = sTemp[1].split('T');
 				sYear = sDateTime[0].substring(0, 4);

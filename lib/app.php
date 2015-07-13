@@ -426,24 +426,60 @@ class App{
 				
 				foreach($valarm as $vInfo){
 	                if($vInfo['ACTION'] === 'DISPLAY' && strstr($vInfo['TRIGGER'],'P')){
-	                    if(substr_count($vInfo['TRIGGER'],'PT') === 1){
-	                    	 $aTask['sAlarm'][]='TRIGGER:'.$vInfo['TRIGGER'];
-	                    }
-						
-					    if(substr_count($vInfo['TRIGGER'],'-P') === 1 && substr_count($vInfo['TRIGGER'],'PT') === 0){
-	                    	 $temp = explode('-P',(string)$vInfo['TRIGGER']);
-							 $aTask['sAlarm'][]='TRIGGER:-PT'.$temp[1];
-	                    }
-						if(substr_count($vInfo['TRIGGER'],'+P') === 1 && substr_count($vInfo['TRIGGER'],'PT') === 0){
-	                    	$temp = explode('+P',$vInfo['TRIGGER']);
-							 $aTask['sAlarm'][]='TRIGGER:+PT'.$temp[1];
+	                  
+					   if(substr_count($vInfo['TRIGGER'],'PT',0,2) === 1){
+						 	$TimeCheck = substr($vInfo['TRIGGER'], 2);
+							$aTask['sAlarm'][] = 'TRIGGER:+PT'.$TimeCheck;
+						}
+					  
+					   if(substr_count($vInfo['TRIGGER'],'+PT',0,3) === 1){
+						 	$TimeCheck = substr($vInfo['TRIGGER'], 3);
+							$aTask['sAlarm'][] = 'TRIGGER:+PT'.$TimeCheck;
+						}
+					   
+	                    if(substr_count($vInfo['TRIGGER'],'P',0,1) === 1 && substr_count($vInfo['TRIGGER'],'PT',0,2) === 0 && substr_count($vInfo['TRIGGER'],'T',strlen($vInfo['TRIGGER'])-1,1) === 0){
+					  		$TimeCheck = substr($vInfo['TRIGGER'], 1);
+						  	$aTask['sAlarm'][] = 'TRIGGER:+PT'.$TimeCheck;
+					  }
+					  if(substr_count($vInfo['TRIGGER'],'P',0,1) === 1 && substr_count($vInfo['TRIGGER'],'PT',0,2) === 0 && substr_count($vInfo['TRIGGER'],'T',strlen($vInfo['TRIGGER'])-1,1) === 1){
+					  		$TimeCheck = substr($vInfo['TRIGGER'], 1);
+							$TimeCheck = substr($TimeCheck, 0, -1);
+							$aTask['sAlarm'][] = 'TRIGGER:+PT'.$TimeCheck;  
+					  }
+					  
+					  
+					   if(substr_count($vInfo['TRIGGER'],'-PT',0,3) === 1){
+					  		$TimeCheck = substr($vInfo['TRIGGER'], 3);
+						 	$aTask['sAlarm'][] = 'TRIGGER:-PT'.$TimeCheck;  
+					  }
+
+					  if(substr_count($vInfo['TRIGGER'],'-P',0,2) === 1 && substr_count($vInfo['TRIGGER'],'-PT',0,3) === 0 && substr_count($vInfo['TRIGGER'],'T',strlen($vInfo['TRIGGER'])-1,1) === 0){
+					  		$TimeCheck = substr($vInfo['TRIGGER'], 2);
+						  	$aTask['sAlarm'][] = 'TRIGGER:-PT'.$TimeCheck;  
+					  }
+					  
+					 if(substr_count($vInfo['TRIGGER'],'-P',0,2) === 1 && substr_count($vInfo['TRIGGER'],'-PT',0,3) === 0 && substr_count($vInfo['TRIGGER'],'T',strlen($vInfo['TRIGGER']) -1,1) === 1){
+					  		$TimeCheck = substr($vInfo['TRIGGER'], 2);
+							$TimeCheck = substr($TimeCheck, 0, -1);
+							$aTask['sAlarm'][] = 'TRIGGER:-PT'.$TimeCheck;    
+					  }
+			
+					 
+					 
+					 
+					
+					   
+					   if($vInfo['TRIGGER'] === 'PT0S'){
+	                    	 $aTask['sAlarm']='';
 	                    }
 					   
 	                }
 	                if($vInfo['ACTION'] === 'DISPLAY' && !strstr($vInfo['TRIGGER'],'P')){
 	                    if(!strstr($vInfo['TRIGGER'],'DATE-TIME'))  {
+	                        
 	                        $aTask['sAlarm'][] = 'TRIGGER;VALUE=DATE-TIME:'.$vInfo['TRIGGER'];
 	                    }else{
+	                       
 	                        $aTask['sAlarm'][] = $vInfo['TRIGGER'];
 	                    }
 	                    
@@ -712,7 +748,7 @@ class App{
 		$vtodo->setDateTime('LAST-MODIFIED', 'now');
 		$vtodo->setDateTime('DTSTAMP', 'now');
 		
-		$vtodo->SUMMARY= $summary;
+		$vtodo->SUMMARY = $summary;
 		$vtodo->setString('URL', $link);
 		//PERCENT-COMPLETE
 		$vtodo->setString('PERCENT-COMPLETE', $percentComplete);
@@ -779,7 +815,7 @@ class App{
 		}
 		
 		//Alarm New
-		/*REMINDER NEW*/
+	
 		/*REMINDER NEW*/
 		if($request['reminder'] !== 'none'){
 			//$aTimeTransform=self::getReminderTimeParsingOptions();	
@@ -800,7 +836,12 @@ class App{
 				    $valarm->setString('TRIGGER',$request['sReminderRequest']);
 				}
 				if($request['remindertimeselect'] === 'ondate') {
-					$valarm->setString('TRIGGER',$request['sReminderRequest']);
+					
+					$temp=explode('TRIGGER;VALUE=DATE-TIME:',$request['sReminderRequest']);
+					$datetime_element = new \Sabre\VObject\Property\ICalendar\DateTime(new \Sabre\VObject\Component\VCalendar(),'TRIGGER');
+					$datetime_element->setDateTime( new \DateTime($temp[1]), false);
+	                $valarm->__set('TRIGGER',$datetime_element);
+					$valarm->TRIGGER['VALUE'] = 'DATE-TIME';
 				}
 				if($request['reminderAdvanced'] === 'EMAIL'){
 					$valarm->setString('ATTENDEE','mailto:'.$request['reminderemailinput']);
