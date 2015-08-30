@@ -1667,7 +1667,44 @@ $(document).ready(function() {
 		//}
 	});
 	
-	
+	$(document).on('focus', '#tasklocation', function() {
+			if ( !$(this).data("autocomplete") ) { // If the autocomplete wasn't called yet:
+		
+					// don't navigate away from the field on tab when selecting an item
+					$(this)
+					.bind('keydown', function (event) {
+						if (event.keyCode === $.ui.keyCode.TAB &&
+							typeof $(this).data('autocomplete') !== 'undefined' &&
+							$(this).data('autocomplete').menu.active) {
+							event.preventDefault();
+						}
+					})
+					.autocomplete({
+						source:function (request, response) {
+							$.getJSON(
+								OC.generateUrl('/apps/'+OC.TasksPlus.appName+'/taskautocompletelocation'),
+								{
+									term:request.term
+								}, response);
+						},
+						search:function () {
+							
+							return this.value.length >= 2;
+		
+						},
+						focus:function () {
+							// prevent value inserted on focus
+							return false;
+						},
+						select:function (event, ui) {
+							
+							return ui.item.value;
+						}
+					});
+				}
+		});
+
+
 	
 	
 }); 

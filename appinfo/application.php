@@ -29,6 +29,7 @@ use \OCP\AppFramework\App;
 use \OCA\TasksPlus\Controller\TaskController;
 use \OCA\TasksPlus\Controller\PageController;
 use \OCA\TasksPlus\Controller\PublicController;
+use OCA\TasksPlus\Service\ContactsIntegration;
 
 use \OCP\Share;
 use \OCP\IContainer;
@@ -70,11 +71,19 @@ class Application extends App {
 			$c->query('Request'),
 			$c->query('UserId'),
 			$c->query('L10N'),
-			$c->query('Settings')
+			$c->query('Settings'),
+			$c->query('ContactsIntegration')
 			);
 		});
 		
-	
+		/**
+		 * Services
+		 */
+		$container->registerService('ContactsIntegration', function ($c) {
+			/** @var IAppContainer $c */
+			return new ContactsIntegration($c->getServer()->getContactsManager());
+		});
+		
           /**
 		 * Core
 		 */

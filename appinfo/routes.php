@@ -40,6 +40,7 @@ $application->registerRoutes($this, ['routes' => [
 		['name' => 'task#setCompleted',	'url' => '/setcompleted',	'verb' => 'POST'],
 		['name' => 'task#setCompletedPercentMainTask',	'url' => '/setcompletedpercentmaintask',	'verb' => 'POST'],
 		['name' => 'task#getDefaultValuesTasks',	'url' => '/getdefaultvaluestasks',	'verb' => 'GET'],
+		['name' => 'task#autoComplete', 'url' => '/taskautocompletelocation', 'verb' => 'GET'],
 		]
 	]);
 	

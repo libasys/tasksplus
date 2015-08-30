@@ -44,12 +44,18 @@ class TaskController extends Controller {
 	private $userId;
 	private $l10n;
 	private $configInfo;
+	
+	/**
+	 * @var ContactsIntegration
+	 */
+	private $contactsIntegration;
 
-	public function __construct($appName, IRequest $request, $userId, $l10n, IConfig $settings) {
+	public function __construct($appName, IRequest $request, $userId, $l10n, IConfig $settings, $contactsIntegration) {
 		parent::__construct($appName, $request);
 		$this -> userId = $userId;
 		$this->l10n = $l10n;
 		$this->configInfo = $settings;
+		$this->contactsIntegration = $contactsIntegration;
 	}
 	
 	/**
@@ -889,6 +895,16 @@ class TaskController extends Controller {
 		return $response;
 		
 	}
+	
+	/**
+	 * @NoAdminRequired
+	 * @param string $term
+	 * @return array
+	 */
+		public function autoComplete($term) {
+			return $this->contactsIntegration->getMatchingLocaction( $term );
+		}
+	
 	/**
 	 * @NoAdminRequired
 	 */
