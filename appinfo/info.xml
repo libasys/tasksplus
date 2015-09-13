@@ -8,7 +8,7 @@
 	<description>The tasks+ apps comes with a lot of improvements to have more options to work with tasks. The tasks+ app need calendar+ app before installed!</description>
 	<namespace>TasksPlus</namespace>
 	<website>https://github.com/libasys/ownCloud-8.1-TasksPlus</website>
-	<version>1.0.2</version>
+	<version>1.0.3</version>
 	<category>productivity</category>
 	<default_enable/>
 	<public>
