@@ -9,10 +9,14 @@
 		<tr>
 			<td>
 				<input type="hidden" name="read_worker" id="hiddenCalSelection" value="<?php p($_['calendar']); ?>">
-				<input type="text" style="width:300px; font-size:16px; color:#999;padding:5px;"  placeholder="<?php p($l->t("Title of the Event"));?>" value="" maxlength="100" id="tasksummary" name="tasksummary" autofocus="autofocus"/>
+				<input type="text" style="width:100%;width:calc( 100% - 15px ); font-size:16px; color:#999;padding:5px;"  placeholder="<?php p($l->t("Title of the Event"));?>" value="" maxlength="100" id="tasksummary" name="tasksummary" autofocus="autofocus"/>
 			     <?php if($_['bShareCalId'] === ''){ ?>
+			      <br style="clear:both;" />
 			    <div id="sCalSelect" class="combobox">
-			    <div class="selector">Please select</div>
+			    <div class="comboSelHolder">	
+						<div class="selector"><?php p($l->t('Please choose a calendar')); ?></div>
+						<div class="arrow-down"><i class="ioc ioc-angle-down"></i></div>
+					</div>
 			    <ul>
 			    	<?php
 			    	  foreach($_['calendar_options'] as $calInfo){
@@ -36,7 +40,7 @@
 		</tr>
 		<tr>
 			<td>
-			<input type="text" style="width:340px;font-size:12px;"  placeholder="<?php p($l->t("Location of the Event"));?>" value="" maxlength="100" id="tasklocation"  name="tasklocation" />
+			<input type="text" style="width:100%;width:calc( 100% - 17px );font-size:12px;"  placeholder="<?php p($l->t("Location of the Event"));?>" value="" maxlength="100" id="tasklocation"  name="tasklocation" />
              
 			</td>
 		</tr>
@@ -70,7 +74,7 @@
 						<div id="sReminderSelect" class="combobox" style="margin:0;margin-top:10px;margin-bottom:-10px;">
 						<div class="comboSelHolder">	
 					    <div class="selector">Please select</div>
-					    <div class="arrow-down"></div>
+					    <div class="arrow-down"><i class="ioc ioc-angle-down"></i></div>
 					    </div>
 					    <ul>
 					    	<?php
@@ -110,7 +114,7 @@
      
      <ul id="tagmanager" style="width:96%;line-height:20px;margin-top:6px;margin-bottom:5px;"></ul>
    
-	<input type="text" style="width:95%;font-family:Arial, fontello;font-size:14px;" size="200" size="200" placeholder="&#xe84f; <?php p($l->t("URL"));?>" value="" maxlength="200"  name="link" />
+	<input type="text" style="width:94%;font-family:Arial, fontello;font-size:14px;" size="200" size="200" placeholder="&#xe84f; <?php p($l->t("URL"));?>" value="" maxlength="200"  name="link" />
       <br class="clearing"  />
     <textarea placeholder="&#xe845; <?php p($l->t("Description of the Event"));?>" name="noticetxt"  style="width:94%;height: 50px;font-family:Arial, fontello;font-size:14px;"></textarea>
      <br class="clearing"  />
@@ -142,19 +146,15 @@
 					<span style="width:100%;border-top:1px solid #bbb;display:block;margin-top:5px;padding-top:4px;">
 				<div class="button-group" style="float:right;">
 				<button id="remCancel" class="button"><?php p($l->t("Cancel"));?></button> 
-				<button id="remOk" style="font-weight:bold;color:#0098E4; min-width:60px;"  class="button"><?php p($l->t("OK"));?></button>
+				<button id="remOk"  class="button primary-button" style="min-width:60px;"><?php p($l->t("OK"));?></button>
 				</div>
 			</span>		
 		</div>
      </form>
-    <div id="actions" style="border-top:1px solid #bbb;width:100%;padding-top:5px;padding-bottom:5px;margin-top:10px;">
+    <div id="actions" style="border-top:1px solid #ddd;width:100%;padding-top:5px;padding-bottom:5px;margin-top:10px;">
 <div  class="button-group" style="float:right;">
 		<button id="newTodo-cancel" class="button"  s><?php p($l->t("Cancel"));?></button> 
-		<button id="newTodo-submit" class="button"  style="min-width:60px;"><?php p($l->t("OK"));?></button>
+		<button id="newTodo-submit" class="button primary-button"  style="min-width:60px;"><?php p($l->t("OK"));?></button>
 	   </div>
 	</div>
    </div>
-  
-
-	
-	       

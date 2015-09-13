@@ -186,7 +186,22 @@ class Timeline{
 						$addPrivateImg='<i class="ioc ioc-eye" title="confidential"></i>';
 					}
 					
-					
+					$prioOutput = '';
+					if(isset($vtodo->PRIORITY)){
+						$prio = $vtodo->getAsString('PRIORITY');
+						if ($prio >= 1 && $prio < 5) {
+							$prioOutput ='<i class="ioc ioc-info-circled priority-' . ( $prio ? $prio : 'n').'" title="'. (string) self::$l10n->t('priority %s ', array((string)self::$l10n->t('high'))).'"></i>';
+							
+						}
+						elseif ($prio  == 5) {
+							$prioOutput ='<i class="ioc ioc-info-circled priority-' . ( $prio ? $prio : 'n').'" title="'.  (string) self::$l10n->t('priority %s ', array((string)self::$l10n->t('medium'))).'"></i>';
+						}
+						
+						elseif ($prio >= 6 && $prio <= 9) {
+							$prioOutput = '<i class="ioc ioc-info-circled priority-' . ( $prio ? $prio : 'n').'" title="'. (string) self::$l10n->t('priority %s ', array((string)self::$l10n->t('low'))).'"></i>';
+							
+						}
+					}
 					
 					$addShareImg='';
 					 if($taskInfo['shared']) {
@@ -206,12 +221,12 @@ class Timeline{
 		             		$addCats.='<span class="catColPrev" style="float:right;padding:0;margin:0;margin-right:1px;margin-top:4px;line-height:12px;font-size:8px;width:12px;height:12px;background-color:'.$bgColor.'" title="'.$catInfo.'">'.substr(trim($catInfo),0,1).'</span>';
 		             	}
 		             }
-		             $dateTask='<span class="addImagesNoDate">'.$addPrivateImg.$addAlarmImg.$addShareImg.'</span>'.$addCats.$Summary;
+		             $dateTask='<span class="addImagesNoDate">'.$prioOutput.$addPrivateImg.$addAlarmImg.$addShareImg.'</span>'.$addCats.$Summary;
 					if($due!=''){
-						$dateTask=$due->getDateTime()->format('d.m.Y H:i').$addCats.'<br  /><span class="addImages">'.$addPrivateImg.$addAlarmImg.$addShareImg.'</span>'.$Summary;
+						$dateTask=$due->getDateTime()->format('d.m.Y H:i').$addCats.'<br  /><span class="addImages">'.$prioOutput.$addPrivateImg.$addAlarmImg.$addShareImg.'</span>'.$Summary;
 					}
 					if($dtstart!=''){
-						$dateTask=$dtstart->getDateTime()->format('d.m.Y H:i').$addCats.'<br  /><span class="addImages">'.$addPrivateImg.$addAlarmImg.$addShareImg.'</span>'.$Summary;
+						$dateTask=$dtstart->getDateTime()->format('d.m.Y H:i').$addCats.'<br  /><span class="addImages">'.$prioOutput.$addPrivateImg.$addAlarmImg.$addShareImg.'</span>'.$Summary;
 						
 					}
 					//categories
@@ -422,6 +437,9 @@ class Timeline{
 
            $tasksCount['sharedtasks']=count($singletodos);
 		   
+		   if($tasksCount['sharedtasks'] > 0){
+		    	$tasksCount['alltasks']+=(int) $tasksCount['sharedtasks'];
+		   }
 		  
 		   
 		   $aReturnArray=array('tasksCount'=>$tasksCount,'aCountCalEvents'=>$aCountCalEvents,'aTaskTime'=>$aTaskTime);
@@ -484,7 +502,7 @@ class Timeline{
    public function generateTasksToCalendarOutput(){
    	
 	 
-	
+	$this->aTasksOutput = \OCP\Share::getItemsSharedWith(CalendarApp::SHARETODO, Vtodo::FORMAT_TODO);
 	 foreach( $this->aTasks as $task ) {
 	                if($task['objecttype']!='VTODO') {
 	                        continue;
@@ -498,11 +516,11 @@ class Timeline{
 			
 			try {
 				if($this->sMode!='' && $this->sMode!='alltasksdone'){
-					if($isCompleted){	
-				   		$this->aTasksOutput['done'][] = App::arrayForJSON($task['id'], $vtodo, $this->dUserTimeZone,$this->aCalendar[$task['calendarid']],$task);
-					}else{
+					//if($isCompleted){	
+				   		//$this->aTasksOutput['done'][] = App::arrayForJSON($task['id'], $vtodo, $this->dUserTimeZone,$this->aCalendar[$task['calendarid']],$task);
+					//}else{
 						$this->aTasksOutput['open'][] = App::arrayForJSON($task['id'], $vtodo, $this->dUserTimeZone,$this->aCalendar[$task['calendarid']],$task);
-					}
+					//}
 				}elseif($this->sMode!='' && $this->sMode=='alltasksdone'){
 						if($isCompleted){
 							//$dateCompleted=$isCompleted->getDateTime() -> format('d.m.Y');
@@ -510,11 +528,11 @@ class Timeline{
 						}	
 				}
 				else{
-				    	if($isCompleted){
-				    		$this->aTasksOutput['done'][] = App::arrayForJSON($task['id'], $vtodo, $this->dUserTimeZone,$this->aCalendar[$task['calendarid']],$task);
-				    	}else{
+				    	//if($isCompleted){
+				    		//$this->aTasksOutput['done'][] = App::arrayForJSON($task['id'], $vtodo, $this->dUserTimeZone,$this->aCalendar[$task['calendarid']],$task);
+				    	//}else{
 				    		$this->aTasksOutput['open'][] = App::arrayForJSON($task['id'], $vtodo, $this->dUserTimeZone,$this->aCalendar[$task['calendarid']],$task);
-				    	}	
+				    	//}	
 				    	
 				}
 				
@@ -522,7 +540,7 @@ class Timeline{
 	                        \OCP\Util::writeLog(App::$appname, $e->getMessage(), \OCP\Util::ERROR);
 	                }
 	        }
-	 
+	 		
 	 
    }
    

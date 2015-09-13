@@ -73,11 +73,11 @@ class Vtodo implements \OCP\Share_Backend {
 				    $accessclass = $vtodo -> getAsString('CLASS');
 				    
 					if($accessclass=='' || $accessclass=='PUBLIC'){
-						$permissions['permissions'] =$item['permissions'];
-						$permissions['calendarcolor'] ='#cccccc';
-						$permissions['isOnlySharedTodo'] =true;
+						$permissions['permissions'] = $item['permissions'];
+						$permissions['calendarcolor'] = '#cccccc';
+						$permissions['isOnlySharedTodo'] = true;
 						$permissions['calendarowner'] = Object::getowner($item['item_source']);
-						$permissions['displayname']=$item['uid_owner'];
+						$permissions['displayname'] = $item['uid_owner'];
 						//\OCP\Util::writeLog('calendar','Cal Owner :'.$permissions['calendarowner'].$vtodo -> getAsString('SUMMARY') ,\OCP\Util::DEBUG);
 						$permissions['iscompleted'] =false;
 						if($vtodo->COMPLETED) {

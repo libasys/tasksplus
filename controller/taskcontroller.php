@@ -31,6 +31,7 @@ use \OCA\CalendarPlus\App as CalendarApp;
 use \OCA\CalendarPlus\Calendar as CalendarCalendar;
 use \OCA\CalendarPlus\VObject;
 use \OCA\CalendarPlus\Object;
+use OCA\CalendarPlus\Share\ShareConnector;
 
 use \OCP\AppFramework\Controller;
 use \OCP\AppFramework\Http\JSONResponse;
@@ -44,6 +45,7 @@ class TaskController extends Controller {
 	private $userId;
 	private $l10n;
 	private $configInfo;
+	private $shareConnector;
 	
 	/**
 	 * @var ContactsIntegration
@@ -55,6 +57,7 @@ class TaskController extends Controller {
 		$this -> userId = $userId;
 		$this->l10n = $l10n;
 		$this->configInfo = $settings;
+		$this -> shareConnector = new ShareConnector();
 		$this->contactsIntegration = $contactsIntegration;
 	}
 	
@@ -207,6 +210,7 @@ class TaskController extends Controller {
 	public function buildLeftNavigation() {
 			
 		$calendars = CalendarCalendar::allCalendars($this->userId, true);
+		$bShareApi = \OC::$server -> getAppConfig() -> getValue('core', 'shareapi_enabled', 'yes');
 		
 		$activeCalendars = '';
 		foreach($calendars as $calendar) {
@@ -241,13 +245,35 @@ class TaskController extends Controller {
 			 if($activeCal === $calInfo['id']){
 			 	$isActiveUserCal = 'isActiveCal';
 			 }
+			 $shareLink='';
+			 $calInfo['bShare'] = false;
+			  if ($calInfo['permissions'] & $this -> shareConnector -> getShareAccess() && $bShareApi === 'yes') {
+				 $calInfo['bShare'] = true;
+				  $shareLink='<a href="#" class="share icon-share" 
+				  	data-item-type="'.$this -> shareConnector -> getConstShareCalendar().'" 
+				    data-item="'.$this -> shareConnector -> getConstSharePrefixCalendar().$calInfo['id'].'" 
+				    data-link="true"
+				    data-title="'.$calInfo['displayname'].'"
+					data-possible-permissions="'.$calInfo['permissions'].'"
+					title="'.(string) $this->l10n->t('Share Calendar').'"
+					>
+					</a>';
+			  }
+			  
+			$notice = '';	
+			if($calInfo['bShare'] === false) {
+					
+				if ($this->shareConnector->getItemSharedWithByLinkCalendar($calInfo['id'], $calInfo['userid'])) {
+					$notice='<b>Notice</b><br>This calendar is also shared by Link for public!<br>';
+				}
+				$calInfo['shareInfo'] = CalendarCalendar::permissionReader($calInfo['permissions']);
+				$shareLink = '<i class="toolTip ioc ioc-info" title="'.$notice.(string) $this->l10n->t('by') . ' ' .$calInfo['userid'].'<br />('.$calInfo['shareInfo'].')"></i>';
+				
+			}
+			
+			
 			 
-			 if((is_array($activeCal) && array_key_exists($calInfo['id'], $activeCal))) {
-			 	$sharedescr = $activeCal[$calInfo['id']];	
-			 	$share = '<i class="ioc ioc-share toolTip" title="<b>'.  CalendarApp::$l10n->t('Shared with').'</b><br>'.$sharedescr.'"></i>'; 	
-			 }
-			 
-			$displayName = '<span class="descr">'.$calInfo['displayname'].' '.$share.'</span>';
+			$displayName = '<span class="toolTip descr"  title="'.$notice.(string)$this->l10n->t('Calendar').' '.$calInfo['displayname'].'">'.$calInfo['displayname'].'</span>';
 			
 	         if($calInfo['userid'] !== $this->userId){
 	  	       
@@ -256,14 +282,29 @@ class TaskController extends Controller {
 	         	}
 				
 			    $rightsOutput = CalendarCalendar::permissionReader($calInfo['permissions']);
-	  	        $displayName='<span class="toolTip descr" title="'.$notice.(string)$this->l10n->t('Calendar').' '.$calInfo['displayname'].'<br />('.$rightsOutput.')">'.$calInfo['displayname'].' (' . CalendarApp::$l10n->t('by') . ' ' .$calInfo['userid'].')</span>';
+	  	        $displayName='<span class="toolTip descr" title="'.$notice.(string)$this->l10n->t('Calendar').' '.$calInfo['displayname'].'">'.$calInfo['displayname'].'</span>';
 	        }
 			 $countCalEvents=0;
 			 if(array_key_exists($calInfo['id'], $outputTodoNav['aCountCalEvents'])) {
 			 	$countCalEvents = $outputTodoNav['aCountCalEvents'][(string)$calInfo['id']];
 			 	}
 			 
-		   	$outputCalendar.= '<li class="calListen '.$isActiveUserCal.'" data-permissions="'.$calInfo['permissions'].'" data-id="'.$calInfo['id'].'"><span class="colCal" style="background-color:'.$calInfo['calendarcolor'].';color:'.CalendarCalendar::generateTextColor($calInfo['calendarcolor']).';">'.substr($calInfo['displayname'],0,1).'</span> '.$displayName.'<span class="iCount">'.$countCalEvents.'</span></li>';
+			 $actionCalender = '';
+			if ($calInfo['userid'] === $this -> userId) {
+				//$actionCalender = '<li><i class="ioc ioc-rename"></i></li><li><i class="ioc ioc-delete"></i></li>';
+			}
+		
+			 $addMenu='<div class="app-navigation-entry-utils-menu-button"><button></button>
+						  <div class="app-navigation-entry-menu" data-calendarid="'.$calInfo['id'].'">
+							  <ul>
+							  <li><i class="ioc ioc-globe"></i></li>
+							  '.$actionCalender.'
+							  </ul>
+						  </div>
+					  </div>';
+			 
+			 
+		   	$outputCalendar.= '<li class="calListen '.$isActiveUserCal.'" data-permissions="'.$calInfo['permissions'].'" data-id="'.$calInfo['id'].'"><span class="colCal iCalendar toolTip" title="'.$this->l10n->t('choose calendar as default').'" style="background-color:'.$calInfo['calendarcolor'].';">&nbsp;</span> '.$displayName.$shareLink.$addMenu.'<span class="iCount">'.$countCalEvents.'</span></li>';
 	     
 	   }
 		
@@ -334,17 +375,21 @@ class TaskController extends Controller {
 			$vtodo -> setDateTime('DTSTAMP', 'now');
 		
 			TasksApp::edit($id, $vcalendar -> serialize(), $orgId);
-		
-			$lastmodified = $vtodo -> __get('LAST-MODIFIED') -> getDateTime();
 			
-			$params=[
-				'lastmodified' =>  (int)$lastmodified -> format('U')
-			];
+			
+			$vcalendar1 = TasksApp::getVCalendar( $id, true, true );
+			$vtodo = $vcalendar1->VTODO;
+				
+			$aTask= TasksApp::getEventObject($id, true, true);	
+			$aCalendar= CalendarCalendar::find($aTask['calendarid']);
+			$user_timezone = CalendarApp::getTimezone();
+			$task_info = TasksApp::arrayForJSON($id, $vtodo, $user_timezone, $aCalendar, $aTask);
 			
 			$response = new JSONResponse();
-			$response -> setData($params);
+			$response -> setData($task_info);
 			
 			return $response;
+			
 		}
 
 		
@@ -360,6 +405,8 @@ class TaskController extends Controller {
 		$hiddenPostField = $this -> params('hiddenfield');
 		$myTaskCal = $this -> params('mytaskcal');
 		$myTaskMode = $this -> params('mytaskmode');
+		
+		$calId = $this -> params('calId'); 
 		
 		if(isset($hiddenPostField) && $hiddenPostField === 'newitTask'){
 			$cid = $this -> params('read_worker');	
@@ -430,15 +477,17 @@ class TaskController extends Controller {
 		$reminder_options = CalendarApp::getReminderOptions();
 		$reminder_advanced_options = CalendarApp::getAdvancedReminderOptions();
 		$reminder_time_options = CalendarApp::getReminderTimeOptions();
-		$activeCal=$this->configInfo->getUserValue($this->userId,CalendarApp::$appname, 'choosencalendar');
-		if(intval($activeCal) > 0 && $activeCal !== ''){
-			if($myTaskMode !== 'calendar' || $myTaskCal === 0) {
-				$activeCal = $activeCal;
-			}else {
-				$activeCal = $myTaskCal;
-			}
+		
+		
+		if($myTaskMode !== 'calendar' || $myTaskCal === 0) {
+			$activeCal = $activeCal;
+		}else {
+			$activeCal = $myTaskCal;
 		}
 		
+		if(isset($calId) && $calId !=''){
+			$activeCal = $calId;
+		}
 		//reminder
 		$reminderdate='';
 		$remindertime='';
@@ -517,12 +566,18 @@ class TaskController extends Controller {
 					  }
 				 }
 			}
-			$params=[
-				'mainid' => $mainTaskId
-			];
 			
+			$vcalendar1 = TasksApp::getVCalendar( $id, true, true );
+			$vtodo = $vcalendar1->VTODO;
+				
+			$aTask= TasksApp::getEventObject($id, true, true);	
+			$aCalendar= CalendarCalendar::find($aTask['calendarid']);
+			$user_timezone = CalendarApp::getTimezone();
+			$task_info = TasksApp::arrayForJSON($id, $vtodo, $user_timezone, $aCalendar, $aTask);
+			$task_info['olduid'] = $data['eventuid'];
+			$task_info['oldcalendarid'] = $data['calendarid'];
 			$response = new JSONResponse();
-			$response -> setData($params);
+			$response -> setData($task_info);
 			
 			return $response;
 		}
@@ -535,9 +590,11 @@ class TaskController extends Controller {
 				$accessclass = 'PUBLIC';
 			}
 			
-			//\OCP\Util::writeLog($this->appName,'ACCESS: '.$accessclass, \OCP\Util::DEBUG);
+			
 			
 			$permissions = TasksApp::getPermissions($id, TasksApp::TODO, $accessclass);
+			
+			
 			$link = strtr($vtodo -> getAsString('URL'), array('\,' => ',', '\;' => ';'));
 		 
 			$TaskDate = ''; 
@@ -571,7 +628,7 @@ class TaskController extends Controller {
 			}
 		
 		
-		$priority= $vtodo->getAsString('PRIORITY');
+		$priority = $vtodo->getAsString('PRIORITY');
 		
 		$calendarsArrayTmp = CalendarCalendar::allCalendars($this->userId, true);
 		//Filter Importent Values
@@ -919,7 +976,7 @@ class TaskController extends Controller {
 			}
 			if($calendar['active'] == 1) {
 				//$calendarInfo[$calendar['id']]=array('bgcolor'=>$calendar['calendarcolor'],'color'=>OCA\CalendarPlus\Calendar::generateTextColor($calendar['calendarcolor']));
-				$myCalendars[$calendar['id']]=array('id'=>$calendar['id'],'name'=>$calendar['displayname']);
+				$myCalendars[$calendar['id']]=array('id'=>$calendar['id'],'name'=>$calendar['displayname'],'uri'=>$calendar['uri']);
 			}
 		}
 		
@@ -934,7 +991,7 @@ class TaskController extends Controller {
 			
 			
 			foreach($checkCat['tagslist'] as $tag){
-					$checkCatTagsList[$tag['name']] = array('name'=>$tag['name'],'color'=>$tag['color'],'bgcolor'=>$tag['bgcolor']);
+					$checkCatTagsList[$tag['name']] = array('id'=>$tag['id'],'name'=>$tag['name'],'color'=>$tag['color'],'bgcolor'=>$tag['bgcolor']);
 			}
 		
 		$params=[

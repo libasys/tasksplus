@@ -36,7 +36,7 @@ use \OCA\CalendarPlus\VObject;
 use \OCA\CalendarPlus\App as CalendarApp;
 use \OCA\CalendarPlus\ActivityData;
 use \OCA\TasksPlus\Timeline;
-
+use \OCA\TasksPlus\Share\Backend\Vtodo;
 
 App::$appname = 'tasksplus';
 App::$l10n = \OC::$server->getL10N(App::$appname);
@@ -104,7 +104,7 @@ class App{
 		  $startDate=$cDataTimeLine->getStartDate();
 		  $endDate=$cDataTimeLine->getEndDate();
 		   
-		\OCP\Util::writeLog(self::$appname,'sql->where: '.$aSQL['wheresql'], \OCP\Util::DEBUG);
+		//\OCP\Util::writeLog(self::$appname,'sql->where: '.$aSQL['wheresql'], \OCP\Util::DEBUG);
 			
 		$stmt = \OCP\DB::prepare( 'SELECT * FROM `'.CalendarApp::CldObjectTable.'` WHERE  `objecttype`= ? '.$aSQL['wheresql'].' ORDER BY relatedto ASC, calendarid ASC, startdate DESC');
 		$result = $stmt->execute($aSQL['execsql']);
@@ -178,15 +178,19 @@ class App{
 	   $tasksFiltered=array();
 	    foreach( $calendarobjects as $taskHaupt ) {
 	 	 	$bsub=false;
-			
+			$uidName = '';
 		 	 foreach( $calendarobjects as $taskSub ) {
 		 		if($taskHaupt['eventuid'] !== '' && $taskHaupt['eventuid'] === $taskSub['relatedto']){
 		 			$bsub=true;
-					
-		 		}
+					$uidName = $taskHaupt['summary'];
+			 	}
 		 	}
 		
 		$taskHaupt['subtask'] = $bsub;
+		if($bsub === false){
+			$taskHaupt['uidname'] = $uidName;
+		}
+		
 		$tasksFiltered[] = $taskHaupt;
 	 }
 		
@@ -255,7 +259,7 @@ class App{
 		$stmt->execute(array($type,$startdate,$enddate,$repeating,$summary,$data,time(),$isAlarm,$uid,$relatedTo,$id));
 
 		Calendar::touchCalendar($oldobject['calendarid']);
-		\OCP\Util::emitHook('OC_Calendar', 'editTodo', $id);
+		//\OCP\Util::emitHook('OC_Calendar', 'editTodo', $id);
 		
 		/****Activity New ***/
 		$link =\OC::$server->getURLGenerator()->linkToRoute(self::$appname.'.page.index').'#'.urlencode($id);
@@ -316,18 +320,22 @@ class App{
 			
 			$calendarobjects[] = $row;
 		}
-
+		
 		$tasksFiltered=array();
 	    foreach( $calendarobjects as $taskHaupt ) {
 	 	 	$bsub=false;
+			
 		 	 foreach( $calendarobjects as $taskSub ) {
 		 		if($taskHaupt['eventuid'] !=='' && $taskHaupt['eventuid'] === $taskSub['relatedto']){
 		 			$bsub=true;
+					
 		 		}
-		 	}
+			}
 		
-		$taskHaupt['subtask'] = $bsub;	 
+		$taskHaupt['subtask'] = $bsub;
+			 
 		$tasksFiltered[]=$taskHaupt;
+		
 	 }
 		return $tasksFiltered;
 	}
@@ -374,6 +382,7 @@ class App{
 		$aTask['displayname'] = $aCalendar['displayname'];
 		$aTask['color'] = Calendar::generateTextColor($aCalendar['calendarcolor']);
 		$aTask['permissions'] = $aCalendar['permissions'];
+		$aTask['calendarid'] = $aCalendar['id'];
 		
 		$aTask['rightsoutput'] = Calendar::permissionReader($aCalendar['permissions']);
 		if($aTask['rightsoutput'] === 'full access') {
@@ -385,7 +394,9 @@ class App{
 			 $aTask['summary'].=' (by '.$aCalendar['calendarowner'].')';
 		}
 		$aTask['description'] = strtr($vtodo->getAsString('DESCRIPTION'), array('\,' => ',', '\;' => ';'));
+		$aTask['description'] = nl2br($aTask['description']);
 		$aTask['location'] = strtr($vtodo->getAsString('LOCATION'), array('\,' => ',', '\;' => ';'));
+		$aTask['url'] = strtr($vtodo->getAsString('URL'), array('\,' => ',', '\;' => ';'));
 		$aTask['categories'] = $vtodo->getAsArray('CATEGORIES');
 		$aTask['isOnlySharedTodo']=false;
 		
@@ -487,79 +498,148 @@ class App{
 	            }
 				
 		 }
+
+		//FIXME
 		 $today = strtotime(date('d.m.Y'));
-		 	
+		 $tomorrow = $today + (3600*24);
+		 $yesterday = $today - (3600*24);
+		 
+		 $iTagAkt=date("w",$today);
+   	     $firstday=1;
+     	 $iBackCalc=(($iTagAkt-$firstday)*24*3600);
+		 
+	     $actWeekBeginn=$today - $iBackCalc;
+		 
+		 $iForCalc=(6*24*3600);
+		 $actWeekEnd = $actWeekBeginn + $iForCalc;
+		 
+		 	$aTask['period'] = '';
+			$aTask['startsearch'] ='';
 		 	if ( $vtodo->DTSTART) {
-			
+				 
 				 $dateStartType=$vtodo->DTSTART->getValueType();
 			     
 			     
 			     $timestamp = strtotime($vtodo->DTSTART -> getDateTime() -> format('d.m.Y'));
-				
+				 $aTask['startsearch'] = $vtodo->DTSTART -> getDateTime() -> format('d.m.Y');
 			    
 				 if($dateStartType === 'DATE'){
 				 	$aTask['startdate']=$vtodo->DTSTART -> getDateTime() -> format('d.m.Y');
-					 if($timestamp==$today){
+					 if($timestamp == $today){
 				 		 $aTask['startdate']=self::$l10n->t('today');
+						 $aTask['period'] = 'today';
 				 	}
-					if($timestamp === ($today-(3600*24))){
+					elseif($timestamp === $yesterday){
 				 		 $aTask['startdate']=self::$l10n->t('yesterday');
+						 $aTask['period'] = 'yesterday';
 				 	}
-                    if($timestamp === ($today+(3600*24))){
+		           elseif($timestamp === $tomorrow){
 				 		 $aTask['startdate']=self::$l10n->t('tomorrow');
+						  $aTask['period'] = 'tomorrow';
 				 	}
+					elseif($timestamp >= $actWeekBeginn && $timestamp <= $actWeekEnd){
+						 $aTask['period'] = 'actweek';
+					}
+					elseif($timestamp > $actWeekEnd){
+						 $aTask['period'] = 'comingsoon';
+					}
+					elseif($timestamp < $actWeekBeginn){
+						 $aTask['period'] = 'missedactweek';
+					}
 				 }
+				 
 				 if($dateStartType === 'DATE-TIME'){
 				 	$aTask['startdate'] = $vtodo->DTSTART -> getDateTime() -> format('d.m.Y H:i');
+					 
+					 
 					 if($timestamp === $today){
 				 	 	$aTask['startdate'] = self::$l10n->t('today').' '.$vtodo->DTSTART -> getDateTime() -> format('H:i');
+						$aTask['period'] = 'today';
 				 	}
-				 	if($timestamp===($today-(3600*24))){
+					 elseif($timestamp === $yesterday){
 				 		 $aTask['startdate'] = self::$l10n->t('yesterday').' '.$vtodo->DTSTART -> getDateTime() -> format('H:i');
+						$aTask['period'] = 'yesterday';
 				 	}
-					if($timestamp===($today+(3600*24))){
+					elseif($timestamp === $tomorrow){
 				 		 $aTask['startdate'] = self::$l10n->t('tomorrow').' '.$vtodo->DTSTART -> getDateTime() -> format('H:i');
+						 $aTask['period'] = 'tomorrow';
 				 	}
+					elseif($timestamp >= $actWeekBeginn && $timestamp <= $actWeekEnd){
+						 $aTask['period'] = 'actweek';
+					}
+					elseif($timestamp > $actWeekEnd){
+						 $aTask['period'] = 'comingsoon';
+					}
+					elseif($timestamp < $actWeekBeginn){
+						 $aTask['period'] = 'missedactweek';
+					}
 				 }
             
 		}
 		else {
 			$aTask['startdate'] = false;
 		}
-		
+		//higher prior than startdate
+		  $aTask['perioddue'] = '';
+		  $aTask['duesearch'] = '';
 		if ( $vtodo->DUE) {
 			
 				 $dateDueType=$vtodo->DUE->getValueType();
-			     
+			    
 			     
 			     $timestamp = strtotime($vtodo->DUE -> getDateTime() -> format('d.m.Y'));
-				
+				 $aTask['duesearch'] = $vtodo->DUE -> getDateTime() -> format('d.m.Y');
 			    
 				 if($dateDueType === 'DATE'){
-				 	$aTask['due']=$vtodo->DUE -> getDateTime() -> format('d.m.Y');
+				 	$aTask['due'] = $vtodo->DUE -> getDateTime() -> format('d.m.Y');
 					 if($timestamp === $today){
 				 		 $aTask['due'] = self::$l10n->t('today');
+						 $aTask['perioddue'] = 'today';
 				 	}
-					if($timestamp === ($today-(3600*24))){
+					elseif($timestamp === $yesterday){
 				 		 $aTask['due'] = self::$l10n->t('yesterday');
+						 $aTask['perioddue'] = 'yesterday';
 				 	}
-                    if($timestamp === ($today+(3600*24))){
+			          elseif($timestamp === $tomorrow){
 				 		 $aTask['due'] = self::$l10n->t('tomorrow');
+						$aTask['perioddue'] = 'tomorrow';
 				 	}
+					elseif($timestamp >= $actWeekBeginn && $timestamp <= $actWeekEnd){
+						 $aTask['perioddue'] = 'actweek';
+					}
+					elseif($timestamp > $actWeekEnd){
+						 $aTask['perioddue'] = 'comingsoon';
+					}
+					elseif($timestamp < $actWeekBeginn){
+						 $aTask['perioddue'] = 'missedactweek';
+					}
 				 }
 				 if($dateDueType === 'DATE-TIME'){
 				 	$aTask['due'] = $vtodo->DUE -> getDateTime() -> format('d.m.Y H:i');
 					 if($timestamp === $today){
 				 	 	$aTask['due'] = self::$l10n->t('today').' '.$vtodo->DUE -> getDateTime() -> format('H:i');
+						  $aTask['perioddue'] = 'today';
 				 	}
-				 	if($timestamp === ($today-(3600*24))){
+				 	elseif($timestamp === $yesterday){
 				 		 $aTask['due'] = self::$l10n->t('yesterday').' '.$vtodo->DUE -> getDateTime() -> format('H:i');
+						 $aTask['perioddue'] = 'yesterday';
 				 	}
-					if($timestamp === ($today+(3600*24))){
+					elseif($timestamp === $tomorrow){
 				 		 $aTask['due'] = self::$l10n->t('tomorrow').' '.$vtodo->DUE -> getDateTime() -> format('H:i');
+						 $aTask['perioddue'] = 'tomorrow';
 				 	}
+					elseif($timestamp >= $actWeekBeginn && $timestamp <= $actWeekEnd){
+						 $aTask['perioddue'] = 'actweek';
+					}
+					elseif($timestamp > $actWeekEnd){
+						 $aTask['perioddue'] = 'comingsoon';
+					}
+					elseif($timestamp < $actWeekBeginn){
+						 $aTask['perioddue'] = 'missedactweek';
+					}
 				 }
-                 
+            
+			   
 				   
 			if($vtodo -> getAsString('RRULE') !== ''){
 				$rrule = explode(';', $vtodo -> getAsString('RRULE'));
@@ -581,7 +661,31 @@ class App{
 			$aTask['due'] = false;
 		}
 		
+		if($aTask['due'] === false && $aTask['startdate'] === false){
+			$aTask['period'] = 'withoutdate';
+			$aTask['perioddue'] = 'withoutdate';
+		}  
+		
+		$aTask['priority'] = '' ;
+		$aTask['priorityDescr'] = '';
+		$aTask['priorityLang'] = '';
+		if(isset($vtodo->PRIORITY)){
 		$aTask['priority'] = $vtodo->getAsString('PRIORITY');
+			if ($aTask['priority']  == 1 || $aTask['priority']  == 2 || $aTask['priority']  == 3 || $aTask['priority']  == 4) {
+				$aTask['priorityDescr'] = (string) self::$l10n->t('priority %s ', array((string)self::$l10n->t('high')));
+				$aTask['priorityLang'] = 'high';
+			}
+			elseif ($aTask['priority']  == 5) {
+				$aTask['priorityDescr'] = (string) self::$l10n->t('priority %s ', array((string)self::$l10n->t('medium')));
+				$aTask['priorityLang'] = 'medium';
+			}
+			elseif ($aTask['priority']  == 6 || $aTask['priority']  == 7 || $aTask['priority']  == 8 || $aTask['priority']  == 9) {
+				$aTask['priorityDescr'] = (string) self::$l10n->t('priority %s ', array((string)self::$l10n->t('low')));
+				$aTask['priorityLang'] = 'low';
+			}
+		}
+		
+		
 		
 		if(!isset($aCalendar['iscompleted'])){
 			 $aCalendar['iscompleted'] = false;
@@ -775,6 +879,8 @@ class App{
 		$vtodo->setString('DESCRIPTION', $description);
 		$vtodo->setString('CATEGORIES', $categories);
 		$vtodo->setString('PRIORITY', $priority);
+		//FIXME
+	
 		$vtodo->setString('CLASS', $accessclass);
 		$CALINFO = Calendar::find($cid);
 		
@@ -937,21 +1043,36 @@ class App{
 			}
 		}
 		elseif($type == self::TODO) {
+				
 			if(Object::getowner($id) === \OCP\USER::getUser()) {
 				return $permissions_all;
 			} else {
 				$object = Object::find($id);
-				$sharedCalendar = \OCP\Share::getItemSharedWithBySource(CalendarApp::SHARECALENDAR, CalendarApp::SHARECALENDARPREFIX. $object['calendarid']);
-				$sharedEvent = \OCP\Share::getItemSharedWithBySource( CalendarApp::SHARETODO, CalendarApp::SHARETODOPREFIX. $id);
-				$calendar_permissions = 0;
-				$event_permissions = 0;
-				if ($sharedCalendar) {
-					$calendar_permissions = $sharedCalendar['permissions'];
+				$cal = Calendar::find($object['calendarid']);	
+				
+				if(\OCP\USER::isLoggedIn()){
+					$sharedCalendar = \OCP\Share::getItemSharedWithBySource(CalendarApp::SHARECALENDAR, CalendarApp::SHARECALENDARPREFIX.$object['calendarid']);
+					$sharedEvent = \OCP\Share::getItemSharedWithBySource(CalendarApp::SHARETODO,CalendarApp::SHARETODOPREFIX.$id);
+					$calendar_permissions = 0;
+					$event_permissions = 0;
+					if ($sharedCalendar) {
+						$calendar_permissions = $sharedCalendar['permissions'];
+						
+					}
+					if ($sharedEvent) {
+						$event_permissions = $sharedEvent['permissions'];
+					}
 				}
-				if ($sharedEvent) {
-					$event_permissions = $sharedEvent['permissions'];
-					
-				}
+				
+				if(!\OCP\USER::isLoggedIn()){
+						
+					$sharedByLinkCalendar = \OCP\Share::getItemSharedWithByLink(CalendarApp::SHARECALENDAR, CalendarApp::SHARECALENDARPREFIX.$object['calendarid'], $cal['userid']);
+					if ($sharedByLinkCalendar) {
+						$calendar_permissions = $sharedByLinkCalendar['permissions'];
+						$event_permissions = 0;
+					}
+				}	
+				
 				if ($accessclass === 'PRIVATE') {
 					return 0;
 				} elseif ($accessclass === 'CONFIDENTIAL') {

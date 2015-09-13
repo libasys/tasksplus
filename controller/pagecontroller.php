@@ -60,16 +60,6 @@ class PageController extends Controller {
 	public function index() {
 			
 		if(\OC::$server->getAppManager()->isEnabledForUser('calendarplus'))	{
-			\OCP\Util::addScript(CalendarApp::$appname, '3rdparty/jquery.webui-popover');
-			\OCP\Util::addStyle(CalendarApp::$appname, '3rdparty/jquery.webui-popover');
-			\OCP\Util::addScript(CalendarApp::$appname,'timepicker');
-			\OCP\Util::addScript($this->appName, 'app');
-			\OCP\Util::addScript(CalendarApp::$appname,'jquery.nicescroll.min');
-			\OCP\Util::addStyle(CalendarApp::$appname, '3rdparty/fontello/css/animation');
-			\OCP\Util::addStyle(CalendarApp::$appname, '3rdparty/fontello/css/fontello');
-			\OCP\Util::addStyle($this->appName, 'style');
-			\OCP\Util::addScript(CalendarApp::$appname, '3rdparty/tag-it');
-			\OCP\Util::addStyle(CalendarApp::$appname, '3rdparty/jquery.tagit');
 			
 			
 			$csp = new \OCP\AppFramework\Http\ContentSecurityPolicy();
@@ -83,6 +73,7 @@ class PageController extends Controller {
 				'mailNotificationEnabled' => $config->getAppValue('core', 'shareapi_allow_mail_notification', 'no'),
 				'mailPublicNotificationEnabled' => $config->getAppValue('core', 'shareapi_allow_public_notification', 'no'),
 				'appname' => TasksApp::$appname,
+				'calappname' => CalendarApp::$appname,
 			));
 			$response->setContentSecurityPolicy($csp);
 		}else{

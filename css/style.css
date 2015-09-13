@@ -1,12 +1,17 @@
-#loading {
-	position:absolute; z-index:1000;top:0;left:0; display: none; width:100%;height:100%;background:rgba(0,0,0,0.2);
-	text-align:center;
-	color:#000;
-	font-size:100px;
-}
+
 #app-content{
 	background-color:#fff;
 	
+}
+
+#loading {
+	height: 100%;
+	width: 100%;
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 10;
+	background-color: rgba(255,255,255,0.3);
 }
 
 
@@ -152,6 +157,18 @@
 	display:inline-block;
 }
 
+.button.primary-button{
+	background-color: #35537a;
+	color: #ddd;
+}
+
+
+
+.button.primary-button:hover{
+	color:#fff;
+	background-color: #35537a;
+}
+
 
 /*RIGHTCONTENT*/
 #tasksListOuter{
@@ -184,6 +201,7 @@
 #tasks_list{
 	height:auto;
 	position:relative;
+	border-top:1px solid #eee;
 	float:left;
 	left:0;
 	padding-left:0;
@@ -192,7 +210,21 @@
 	overflow:auto; 
 	display:block;
 	width:100%;
-	
+}
+#totaskfound{
+	position:relative;
+	height:40px;
+	float:left;
+	left:0;
+	padding-left:0;
+	margin-left:auto;
+	margin-right:auto;
+	display:none;
+	width:100%;
+	text-align:center;
+	line-height:40px;
+	font-size:20px;
+	color:#999;
 }
 #tasks_list_details{
 	height:500px;
@@ -252,14 +284,15 @@ color:#333;
 	width:30px;
 	height:30px;
 }
+
 #app-navigation{
- border-right:1px solid #ccc;
+
  margin:0;
 	padding:0;
 
 }
 #app-navigation,#app-navigation > ul > li{
-	background-color: #fff;
+	
 	
 }
 #app-navigation li > a{
@@ -292,7 +325,7 @@ color:#313131;
 margin:0;
 padding:0;
 margin-left:0px;
-width:96%;
+width:98%;
 }
 
 #taskstime li,#taskssum li,ul#calendarList li{
@@ -310,48 +343,178 @@ width:96%;
 }
 
 ul#taskstime li,ul#taskssum li,ul#calendarList li{
-	
+	position:relative;
 	cursor:pointer;
-	background:#fff;
+	width:100%;
 	padding-left:5px;
+	float:left;
 }
 
-ul#taskstime li:hover,ul#taskssum li:hover,ul#calendarList li:hover,ul#categoryTasksList li:hover{
-	background:#f4f4f4;
+ul#taskstime li:hover,
+ul#taskssum li:hover,
+ul#calendarList li:hover,
+ul#categoryTasksList li:hover{
+	background:#ddd;
 	
 }
-
+ul#taskstime li .descr,ul#taskssum li .descr{
+	
+	position:relative;
+	float:left;
+	width:160px;
+}
 #categoryTasksList li.isFilter{
-	background:#f4f4f4;
+	background:#ddd;
 }
 
-#taskstime .iCount,#taskssum .iCount,#calendarList .iCount {
+#taskstime .iCount,#taskssum .iCount {
 	float:right;
 	display:block;
-	width:24px;
+	position:relative;
+	min-width:24px;
 	height:32px;
 	line-height:32px;
 	font-size:14px;
 	background:transparent;
-	
+	z-index:3;
 	color:#333;
+	right:10px;
 	text-align:center;
 }
 
+#taskssum .taskstimerow[data-id="showall"] .iCount{
+	min-width:50px;
+	text-align:right;
+	right:15px;
+	
+} 
+
 #taskstime .descr,#taskssum .descr,#calendarList .descr{
-	float:left;
+
+	position:relative;
 	display:block;
 	cursor:pointer;
 	height:32px;
 	line-height:32px;
+	
 }	 
+#calendarList li.calListen{
+	
+	position:relative;
+	margin:0;
+	padding:0;
+	float:left;
+	display:inline-block;
+	width:95%;
+}
 
-#calendarList  span.descr{
+#calendarList  li.calListen .descr{
+	float:left;
 	white-space: nowrap;
 	overflow:hidden;
 	 text-overflow: ellipsis;
-    width:150px;
+    width:130px;
+ 	
 }	
+#calendarList  li.calListen .iCount{
+	float:right;
+	display:block;
+	position:relative;
+	min-width:24px;
+	height:32px;
+	line-height:32px;
+	font-size:14px;
+		
+	color:#333;
+	text-align:right;
+}
+
+#app-navigation .app-navigation-entry-utils-menu-button {
+	display:block;
+	position:absolute;
+	float:none;
+	
+	right:20px;
+}
+#app-navigation .app-navigation-entry-utils-menu-button button{
+	position:relative;
+	top:-4px;
+	height:24px;
+	
+}
+
+#app-navigation .app-navigation-entry-menu{
+	width:100px;
+	margin-top:2px;
+	margin-right:2px;
+	position:absolute;
+	padding-bottom:5px;
+	
+}
+
+
+#app-navigation .app-navigation-entry-menu ul li{
+	float:left;
+	width:24px;
+	line-height:30px;
+	height:30px;
+	cursor:pointer;
+	text-align:center;
+	position:relative;
+	background:transparent;
+}
+
+#app-navigation .app-navigation-entry-menu ul li:hover{
+	background:transparent;
+}
+
+.app-navigation-entry-menu ul{
+	position:relative;
+}
+.app-navigation-entry-menu ul li i{
+	font-size:18px;
+	
+	width:24px;
+	line-height:30px;
+	height:30px;
+}
+
+#app-navigation a.share, #app-navigation i.ioc-info{
+	float:left;
+	margin-top:-4px;
+	position:relative;
+	width:30px;
+	
+	display:inline-block;
+}
+
+#app-navigation .app-navigation-entry-edit{
+	display:none;
+}
+
+#app-navigation .app-navigation-entry-edit input[type="text"] {
+	padding:0;
+	padding-left:5px;
+	width: 134px;
+	height:30px;
+}
+#app-navigation .app-navigation-entry-edit input[name="caldavuri"]{
+	width: 160px;
+}
+#app-navigation .app-navigation-entry-edit button,
+#app-navigation .app-navigation-entry-edit input[type="submit"] {
+		width: 36px;
+		height: 32px;
+		float: left;
+		
+	}
+
+#datepicker{
+	position:absolute;
+	display:none;
+	z-index:500;
+	width:240px;
+}
 
 #donetodo .iCount{
 	float:right;
@@ -389,25 +552,22 @@ span.taskActions a.button{
 
  
 .task{
-font-size:16px;
+font-size:15px;
 line-height:20px;
 min-height:46px;
 padding:0;
 margin:0;
 display:block;
 float:left;
-
+color:#999;
 border-right:1px solid #E7E7DE;
 
 }
 
-.task .subtask{
-	margin-left:30px;
+.task.subtask{
+	padding-left:30px;
 	width:95.5%;
-	border-right:none;
-	border-bottom:none;
-	border-top:1px solid #ccc;
-	border-left:1px solid #ccc;
+	
 }
 
 .task.highlightTask{
@@ -419,17 +579,33 @@ border-right:1px solid #E7E7DE;
 .task_actions img{vertical-align:middle;}
 .task_actions span{cursor:pointer;}
 
-.task .priority,.ioc.priority{background-color:black;color:white;float:left;}
+.task .icons i{
+	margin-right:2px;
+	font-size:16px;
+}
+.task .priority{
+	font-size:18px;
+	margin-right:2px;
+	height:20px;
+	line-height:20px;
+	margin-top:4px;
+}
+
+.task .priority,.ioc.priority{
+	color:#000;
+	float:left;
+	
+}
 .task .priority-n,.ioc.priority-n{}
-.task .priority-1,.ioc.priority-1{background:rgb(255,0,0);}
-.task .priority-2,.ioc.priority-2{background:rgb(200,0,0);}
-.task .priority-3,.ioc.priority-3{background:rgb(150,0,0);}
-.task .priority-4,.ioc.priority-4{background:rgb(100,0,0);}
-.task .priority-5,.ioc.priority-5{background:rgb(255,255,0);color:black;}
-.task .priority-6,.ioc.priority-6{background:rgb(192,255,0);color:black;}
-.task .priority-7,.ioc.priority-7{background:rgb(128,255,0);color:black;}
-.task .priority-8,.ioc.priority-8{background:rgb(64,255,0);color:black;}
-.task .priority-9,.ioc.priority-9{background:#a81700;color:#fff;}
+.task .priority-1,.ioc.priority-1{color:#B81900;}
+.task .priority-2,.ioc.priority-2{color:#B81900;}
+.task .priority-3,.ioc.priority-3{color:#B81900;}
+.task .priority-4,.ioc.priority-4{color:#B81900;}
+.task .priority-5,.ioc.priority-5{color:#D8C101;}
+.task .priority-6,.ioc.priority-6{color:#008000;}
+.task .priority-7,.ioc.priority-7{color:#008000;}
+.task .priority-8,.ioc.priority-8{color:#008000;}
+.task .priority-9,.ioc.priority-9{color:#008000;}
 
 .task .completed {position:relative;float:left;text-align:center;width:30px; border-right:1px solid #B94A48; height:44px;line-height:44px; display:block;}
 .task .completed label{
@@ -437,7 +613,48 @@ border-right:1px solid #E7E7DE;
 }
 
 
-.task .summary{position:relative;float:left;display:block;margin:2px;width:auto;height:22px;line-height:22px;cursor:pointer;}
+.task .summary{
+	position:relative;
+	float:left;
+	display:block;margin:2px;
+	width:auto;height:22px;
+	line-height:22px;
+	cursor:pointer;
+	font-size:16px;
+	color:#777777;
+}
+
+.task a.ioc, .task i.ioc-notice{
+	font-size:22px;
+	bottom:10px;
+	margin-left:5px;
+	color:#999;
+	float:right;
+	position:absolute;
+	right:120px;
+	
+}
+.task a.ioc-link-ext{
+	margin-right:56px;
+	bottom:8px;
+}
+
+.task a.ioc-location{
+	margin-right:28px;
+}
+
+.task .uidname{
+	position:relative;
+	float:right;
+	display:block;
+	padding-left: 10px;
+	font-size: 11px;
+	font-style:italic;
+}
+
+.task .uidname i.ioc-forward{
+	font-size:11px;
+}
 .task .completeDate{
 	font-size:11px;
 	width:15%;
@@ -545,11 +762,74 @@ cursor:pointer;
 	cursor:pointer;
 }
 
-#categoryTasksList li{
-	padding:0;
-	line-height:24px;
-	color:#313131;	
+#app-navigation i#addGroup{
+	width:30px;
+	height:30px;
+	float:right;
+	opacity:0.4;
+	right:0;
+	margin-right:4px;
+	margin-top:4px;
+	font-size:20px;
+	cursor:pointer;
+	color:#000;
 }
+
+#categoryTasksList li.categorieslisting{
+	float:left;
+	width:98%;
+	font-size:14px;
+	line-height:30px;
+	cursor:pointer;
+	color:#000;
+	position:relative;
+}
+
+#categoryTasksList li.categorieslisting .counter{
+	float:right;
+	line-height:28px;
+	height:28px;
+	width:20px;
+	position:absolute;;
+	z-index:3;
+}
+
+#categoryTasksList li.categorieslisting:hover{
+	background-color:#ccc;
+}
+#categoryTasksList li.categorieslisting .groupname{
+	display:block;
+	float:left;
+	cursor:pointer;
+	position:relative;
+	white-space: nowrap;
+   text-overflow: ellipsis; 
+   overflow:hidden;
+	width:130px;
+}
+
+ul#categoryTasksList li.categorieslisting .ioc-delete,
+ul#categoryTasksList li.categorieslisting .ioc-rename{
+	width:22px;
+	cursor:pointer;
+	opacity:0;
+	float:left;
+	position:relative;
+} 
+ul#categoryTasksList li:hover .ioc-delete,
+ul#categoryTasksList li:hover .ioc-rename{
+	opacity:0.6;
+}
+
+ul#categoryTasksList li.ioc-delete:hover ,
+ul#categoryTasksList li .ioc-rename:hover {
+	opacity:1;
+}
+ul#categoryTasksList li .ioc-delete:hover{
+	color:red;
+}
+
+
 .colCal{
 	width:20px;
 	height:20px;
@@ -560,7 +840,7 @@ cursor:pointer;
 	text-align:center;
 	color:#fff;
 	line-height:20px;
-	
+	cursor:pointer;
 	border-radius:3px;
 	-webkit-border-radius:3px;
 	
@@ -568,6 +848,16 @@ cursor:pointer;
 	
 	position:relative;
 }
+
+.task .colCal{
+	width:5px;
+	height:41px;
+	margin:0;
+	margin-left:1px;
+	margin-right:2px;
+	border-radius: 0;
+}
+
 .catColPrev{
 	width:22px;
 	height:22px;
@@ -586,23 +876,10 @@ a.catColPrev{
 	margin:0;
 	margin-right:2px;
 }
-.categorieslisting{
-	float:left;
-	width:98%;
-	font-size:14px;
-	line-height:28px;
-	height:28px;
-	color:#818181;
-	
-}
-.categorieslisting .counter{
-	float:right;
-	line-height:28px;
-	height:28px;
-	width:20px;
-}
 
-span.colorCal,.task .calCol,.task .priority{
+
+
+span.colorCal,.task .calCol{
 	width:14px;
 	height:14px;
 	display:inline-block;
@@ -624,21 +901,16 @@ span.colorCal{
 	
 }
 
-.task .calCol,.task .priority{
+.task .calCol{
 	margin-top:6px;
 	font-size:7pt;
 	line-height:12px;
 	text-align:center;
 	
 }
-.task .priority{
-	width:20px;
-	height:20px;
-	line-height:20px;
-	font-size:12px;
-	border-radius:10px;
-	-webkit-border-radius:10px;
-}
+
+
+
 
 .task .icons{
 display:block;
@@ -688,92 +960,177 @@ max-width: 350px;
 
 
 #tasks_lists h3,#tasksListOuter h3{
-	text-transform:uppercase;
+	
 	padding-left:5px;
 	height:32px;
 	line-height:32px;
 	text-shadow:none;
-	background: #fff; /* Old browsers */
-
+	font-size:14px;
 
 font-weight:normal;
-color:#999;
+
 	
 } 
 #tasks_lists h3 i.ioc{
 	line-height:18px;
 }
-ul#calendarList li.isActiveCal .iCount:before{
+#tasks_lists h3{
+	padding-top:10px;
+}
+
+ul#calendarList li.isActiveCal .colCal:before{
    font-family:"fontello";
 	content: '\e865';
 	font-size: 18px;
 	position: absolute;
-	margin-left:-24px;
-	color: #99a1a7;
+	margin-left:-6px;
+	color: #000;
 	
 }
-.combobox {cursor:pointer;display:inline-block;position:fixed;z-index:11;}
-.combobox .selector{z-index:11;width:28px;height:29px;text-align:center;margin-top:5px;line-height:29px;padding-left:2px;border-radius:5px;}
-.combobox ul {z-index:300;padding:0;margin:0;display:inline-block;background-color:#f4f4f4;position:absolute;border:1px solid #bbb;border-radius:8px;padding:8px;}
-.combobox li {border-bottom:1px solid #E7E7DE;height:26px; line-height:26px;z-index:300;display:block;width:150px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
-.combobox li .colCal {margin-top:4px;}
+.combobox {cursor:pointer;display:inline-block;position:absolute;z-index:20;color:#616576;}
+.combobox .selector{z-index:11;border:1px solid #eee;width:24px;height:29px;text-align:center;margin-top:5px;line-height:29px;padding-left:6px;border-radius:5px;}
+.combobox ul {z-index:300;padding:0;margin:0;display:inline-block;background-color:#f4f4f4;position:absolute;border:1px solid #ddd;border-radius:4px;padding:8px;}
+.combobox li {color:#616576;height:26px; line-height:26px;z-index:300;display:block;width:150px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
+.combobox li .colCal {margin-top:4px;margin-right:5px;}
+.combobox li .colCal {font-size:12px;}
 .combobox li:hover {background-color:#ccc;}
-.combobox li.isSelected{}
-.combobox .selector .colCal{
-	width:24px;
-	height:24px;
+.combobox .isSelectedCheckbox:after{
+	top:-4px;
+	left:2px;
+	font-size:18px;
 }
-#sRepeatSelect.combobox ul,#sReminderSelect.combobox ul {
+
+#sRepeatSelect.combobox ul,#sReminderSelect.combobox ul ,#sCalSelect.combobox ul {
 	border-top-left-radius: 0;
 	border-top-right-radius:0;
 	margin-left:5px;
 	border-top:none;
 	background:#fff;
 }
-#sReminderSelect.combobox{
-	z-index:20;
+
+#sCalSelect.combobox {
+	position: static;
+	
+	display: block;
+}
+#sCalSelect.combobox ul {
+	z-index:400;
+	padding:0;
+	margin:0;
+	display:inline-block;
+	background-color:#fff;
+	position:absolute;
+	border:1px solid #ddd;
+	border-radius:4px;
+	box-shadow:1px 1px 2px #ddd;
+	border-top:none;
+	border-top-left-radius:0;
+	border-top-right-radius:0;
+	margin-top:-3px;
+	height:auto;
+	padding:8px;
+	width: 92%;
+	
+}
+#sCalSelect.combobox ul li {
+	width: auto;
+	line-height:32px;
+	height:32px;
+	font-size:14px;
+	cursor:pointer;
+}
+#sCalSelect.combobox ul li:hover {
+	background-color:#f4f4f4;
+}
+#sCalSelect.combobox .comboSelHolder{
+	width: 99%;
+	height: 34px;
+	margin: 3px 3px 3px 0;
+	
+	border: 1px solid #ddd;
+	outline: medium none;
+	border-radius: 3px;
+	text-align: left;
+	color: #555;
+	font-size: 14px;
+	cursor:pointer;
+}
+#sCalSelect.combobox .comboSelHolder:hover{
+	background-color:#f4f4f4;
+}
+
+#sCalSelect .selector{
+	width: 90%;
+	height: 25px;
+	float:left;
+	text-align:left;
+	border:none;
+	border-radius:none;
+	cursor:pointer;
+}
+#sCalSelect .arrow-down i{
+	font-size: 28px;
+}
+
+#accordion span.labelLeft{
+	float:left;
+	position:relative;
+	display:block;
+	width:80px;
+	line-height:30px;
+	text-align:right;
+	padding-right:5px;
 }
 
 #sRepeatSelect.combobox ul li,#sReminderSelect.combobox ul li{
 	margin:0;
 	padding:0;
 	border:none;
-	width:150px;
+	width:auto;
 	
 }
+#sRepeatSelect.combobox ul,#sReminderSelect.combobox ul{
+	height:70px;
+	overflow:auto;
+	width:164px;
+	
+	margin-left:0px;
+}
 #sRepeatSelect.combobox{
-	z-index:19;
+	z-index:200;
 }
 
+#sReminderSelect.combobox{
+	z-index:100;
+}
 #sRepeatSelect.combobox li:hover,#sReminderSelect.combobox li:hover {background-color:#f4f4f4;}
 
 #sRepeatSelect.combobox .comboSelHolder,#sReminderSelect.combobox .comboSelHolder{
-	width:170px;
+	width:176px;
 	display:block;
-	height:24px;
+	height:20px;
 	margin-top:-8px;
 	margin-left:0px;
-	
 	border-radius:5px;
 	padding:2px;
-	background:#fff;
-	border:1px solid #cccccc;
+	border:1px solid #ddd;
+	background-color:#fff;
 }
 
-#sRepeatSelect.combobox .arrow-down:after,#sReminderSelect.combobox .arrow-down:after {
+#sRepeatSelect.combobox .arrow-down,#sReminderSelect.combobox .arrow-down{
 	
 	position: absolute;
-	top: -10px;
-	right: 7px;
-	color: #99a1a7;
-	content: '\25BE';
-	font-size:22px;
-	
+	right:3px;
 	background:none;
 	margin:0;
 	float:left;
-	
+	margin-top:-2px;
 }
+#sRepeatSelect.combobox .arrow-down i,#sReminderSelect.combobox .arrow-down i{
+	font-size:18px;
+	font-weight:normal;
+}
+
 
 #sRepeatSelect.combobox .selector,#sReminderSelect.combobox .selector{
 	float:left;
@@ -784,26 +1141,30 @@ ul#calendarList li.isActiveCal .iCount:before{
 	text-align:left;
 	padding:0;
 	padding-left:5px;
-	border-right:1px solid #E7E7DE;
-	height:24px;
-	line-height:24px;
-	width:140px;
+	border-right:1px solid #ddd;
+	height:20px;
+	line-height:20px;
+	width:133px;
 	
 }
 
 #showOwnDev,#showOwnReminderDev,#showOnShare{
 	background:#fff;
 	position:absolute;
-	top:50px;
-	right:20px;
+	top:8px;
+	right:8px;
 	min-height:50px;
 	display:block;
-	width:210px;
-	padding:8px 8px;
-	
-	border-radius:8px;
-	box-shadow:0px 0px 6px #333;
-	z-index:500;
+	width:250px;
+	color: #333333;
+	border-radius: 3px; 
+	box-shadow: 0 0 7px #888888;
+	padding: 15px;
+	z-index: 500;
+	font-size: 100%;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
 	
 }
 #showOnShare{
@@ -944,7 +1305,7 @@ label {
 }
 
 .ui-accordion-header.ui-accordion-header-active {
-	border:1px solid #ccc;
+	border:1px solid #ddd;
 	
 }
 #accordion .ui-accordion-header{
@@ -954,7 +1315,7 @@ label {
 	white-space: nowrap;
 	text-overflow: ellipsis;
 	overflow:hidden;
-	
+	border:1px solid #ddd;
 }
 
 .ui-accordion-content{
@@ -986,7 +1347,7 @@ label {
 #new-event input[type="text"],
 #edit-event input[type="text"]
 {
-	padding:2px 4px;
+	padding:4px 6px;
 	float:left;
 	background:#fff;
 	font-size:12px;
@@ -1066,20 +1427,14 @@ span[data-val="counterdone"].arrowDown:before,h3[data-id="lTimeline"].arrowDown:
 	margin-right:5px;
 }
 
-#sCalSelect{
-	z-index:300;
-}
-#sCalSelect ul{
-	right:0;
-	z-index:300;
-}
+
 
 #edit-event,
 #new-event{
 	position:relative;
 	margin-top:2px;
 	right:0;
-	padding:5px;
+	padding:0px;
 	line-height:28px;
 	color:#818181;
 	text-shadow:1px 1px #f4f4f4;
@@ -1122,14 +1477,18 @@ span[data-val="counterdone"].arrowDown:before,h3[data-id="lTimeline"].arrowDown:
 
 .ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default { overflow:hidden; text-overflow:clip; }
 
-#datepickerNav{
-	width:99%;
-	padding:0;
-	margin:0;
-	margin-top:20px;
+#showcal{
+	cursor:pointer;
+	color:#999;
+	margin-right:5px;
 }
+
+#datepicker.open{
+	display:block;
+}
+
 .ui-datepicker{
-	width: 250px;
+	width: 230px;
 	padding:0;
 	margin:0;
 	padding: 4px 2px;
@@ -1304,7 +1663,11 @@ span[data-val="counterdone"].arrowDown:before,h3[data-id="lTimeline"].arrowDown:
  #sliderShowAs .ui-slider-range { background: #8ae234; }
  #sliderShowAs .ui-widget-header,#slider .ui-widget-header,#sliderPriority .ui-widget-header{background:#8ae234;border:none;border-radius:none;}
  #sliderShowAs .ui-slider-handle { border-color: #EED3D7;background:#EED3D7;height:22px; width:14px;}
-
+@media only screen and (max-width: 768px) {
+	.task.subtask{
+	width:93%;
+	}
+}
 @media only screen and (max-width: 480px) {
 	.task .dueDate{
 		display:none;
@@ -1312,7 +1675,13 @@ span[data-val="counterdone"].arrowDown:before,h3[data-id="lTimeline"].arrowDown:
 	.task .completeLine{
 		display:none;
 	}
+	.task.subtask{
+	width:89%;
+	}
 	.task .ioc-refresh{
+		display:none;
+	}
+	.task a.ioc, .task i.ioc-notice{
 		display:none;
 	}
 }

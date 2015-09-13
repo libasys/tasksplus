@@ -10,11 +10,14 @@
     <input type="hidden" name="mytaskmode" id="mytaskmode" value="<?php p($_['mymode']); ?>" />		
 <input type="hidden" name="mytaskcal" id="mytaskcal" value="<?php p($_['mycal']); ?>" />		
 				<input type="hidden" name="read_worker" id="hiddenCalSelection" value="<?php p($_['calendar']); ?>">
-				<input type="text" style="width:304px; font-size:16px; color:#555;padding:5px;"  placeholder="<?php p($l->t("Title of the Event"));?>" value="<?php p($_['vtodo']->summary); ?>" maxlength="100" id="tasksummary" name="tasksummary" autofocus="autofocus"/>
+				<input type="text" style="width:100%;width:calc( 100% - 15px ); font-size:16px; color:#555;padding:5px;"  placeholder="<?php p($l->t("Title of the Event"));?>" value="<?php p($_['vtodo']->summary); ?>" maxlength="100" id="tasksummary" name="tasksummary" autofocus="autofocus"/>
 			   <?php if((array_key_exists($_['calId'],$_['cal_permissions']) && ($_['cal_permissions'][$_['calId']] & OCP\PERMISSION_CREATE))){ ?>
-			   
+			   <br style="clear:both;" />
 			    <div id="sCalSelect" class="combobox">
-			    <div class="selector">Please select</div>
+			    <div class="comboSelHolder">	
+						<div class="selector"><?php p($l->t('Please choose a calendar')); ?></div>
+						<div class="arrow-down"><i class="ioc ioc-angle-down"></i></div>
+					</div>
 			    <ul>
 			    	<?php
 			    	  foreach($_['calendar_options'] as $calInfo){
@@ -34,8 +37,8 @@
 			    </ul>
 			</div>
 			<?php } ?>
-			<br />
-			<input type="text" style="width:306px;"  placeholder="<?php p($l->t("Location of the Event"));?>" value="<?php p($_['vtodo']->location); ?>" maxlength="100" id="tasklocation"  name="tasklocation" />
+			
+			<input type="text" style="width:100%;width:calc( 100% - 50px );"  placeholder="<?php p($l->t("Location of the Event"));?>" value="<?php p($_['vtodo']->location); ?>" maxlength="100" id="tasklocation"  name="tasklocation" />
              <?php if($_['permissions'] & OCP\PERMISSION_SHARE) { ?>
            
               <a href="#" class="share action permanent icon-share" 
@@ -49,8 +52,8 @@
 			</a>
         
        <?php } ?>	
-     <br style="clear:both;" />  	
-<div id="accordion" style="width:99%;">
+    	
+<div id="accordion" style="clear:both;width:99%;">
 	<h3>
 		
 		<span id="ldatetime" style="font-weight:normal;font-size:12px;"><?php p($l->t('Add Start, Due Date')); ?></span>
@@ -69,13 +72,23 @@
 	 <h3>
 	 	<?php
 			if(isset($_['accessclass']) && $_['accessclass'] == 'CONFIDENTIAL'){
-				print_unescaped('<i title="'.$l->t('Show As').'" class="ioc ioc-eye" style="font-size:14px;"></i>');
+				print_unescaped('<i title="'.$l->t('Show As busy').'" class="ioc ioc-eye" style="font-size:14px;"></i>');
 			}
 			if(isset($_['accessclass']) && $_['accessclass'] == 'PRIVATE'){
-				print_unescaped('<i title="'.$l->t('Show As').'" class="ioc ioc-lock" style="font-size:14px;"></i>');
+				print_unescaped('<i title="'.$l->t('No show event').'" class="ioc ioc-lock" style="font-size:14px;"></i>');
 			}
 			if(isset($_['priority']) && (int)$_['priority']>0){
-				print_unescaped('<i title="'.$l->t('Priority').'" class="ioc ioc-flash priority priority-'.( $_['priority'] ? $_['priority'] : 'n').'" style="border-radius:5px;font-weight:normal;float:none;text-shadow:none;margin-left:5px;font-size:14px;"></i>');
+				$prioDescr = '';	
+				if((int)$_['priority'] >= 1 &&  (int)$_['priority'] < 5){
+					$prioDescr = $l->t('high');	
+				}
+				if((int)$_['priority'] >= 1 &&  (int)$_['priority'] === 5){
+					$prioDescr = $l->t('medium');	
+				}
+				if((int)$_['priority'] >5 &&  (int)$_['priority'] <= 9){
+					$prioDescr = $l->t('low');	
+				}		
+				print_unescaped('<i title="'.$l->t('Priority').' '.$prioDescr.'" class="ioc ioc-info-circled priority priority-'.( $_['priority'] ? $_['priority'] : 'n').'" style="border-radius:5px;font-weight:normal;float:none;text-shadow:none;margin-left:5px;font-size:14px;"></i>');
 			}
 			if(isset($_['percentCompleted']) && (int)$_['percentCompleted']>0){
 				print_unescaped(' '.$l->t('Completed').' '.$_['percentCompleted'].'%, ');
@@ -91,7 +104,7 @@
 					<div id="sReminderSelect" class="combobox" style="margin:0;margin-top:10px;margin-bottom:-10px;">
 					<div class="comboSelHolder">	
 				    <div class="selector">Please select</div>
-				    <div class="arrow-down"></div>
+				    <div class="arrow-down"><i class="ioc ioc-angle-down"></i></div>
 				    </div>
 				    <ul>
 				    	<?php
@@ -161,7 +174,7 @@
 					<span style="width:100%;border-top:1px solid #bbb;display:block;margin-top:5px;padding-top:4px;">
 				<div class="button-group" style="float:right;">
 				<button id="remCancel" class="button"><?php p($l->t("Cancel"));?></button> 
-				<button id="remOk" style="font-weight:bold;color:#0098E4; min-width:60px;"  class="button"><?php p($l->t("OK"));?></button>
+				<button id="remOk"  class="button primary-button" style="min-width:60px;"><?php p($l->t("OK"));?></button>
 				</div>
 			</span>		
 		</div>
@@ -172,7 +185,7 @@
   
  </form>  
  
-  <div id="actions" style="border-top:1px solid #bbb;width:100%;padding-top:5px;margin-top:10px;">
+  <div id="actions" style="border-top:1px solid #ddd;width:100%;padding-top:5px;margin-top:10px;">
   	<div  class="button-group" style="width:30%; float:left;">
 	     <?php if($_['permissions'] & OCP\PERMISSION_DELETE) { ?>
 		<button id="deleteTodo-submit" class="button"><?php p($l->t("Delete"));?></button> 
@@ -183,8 +196,9 @@
 		<button id="editTodo-cancel" class="button"><?php p($l->t("Cancel"));?></button> 
 		
 		 <?php if($_['permissions'] & OCP\PERMISSION_UPDATE) { ?>
-		<button id="editTodo-submit" class="button"  style="min-width:60px;"><?php p($l->t("OK"));?></button> 
+		<button id="editTodo-submit" class="primary-button button"  style="min-width:60px;"><?php p($l->t("OK"));?></button> 
 		<?php } ?>
 	   </div>
 	</div>
- </div>  	       
+ </div>  	
+ 

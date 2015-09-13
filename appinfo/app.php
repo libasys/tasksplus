@@ -35,15 +35,13 @@ $navigationEntry = function () use ($c) {
 		'order' => 1,
 		'name' => $c->query('L10N')->t('Tasks+'),
 		'href' => $c->query('URLGenerator')->linkToRoute($c->getAppName().'.page.index'),
-		'icon' => $c->query('URLGenerator')->imagePath($c->getAppName(), 'tasks.svg'),
+		'icon' => $c->query('URLGenerator')->imagePath($c->getAppName(), 'tasksplus.svg'),
 	];
 };
 $c->getServer()->getNavigationManager()->add($navigationEntry);
 
-  
+if(\OC::$server->getAppManager()->isEnabledForUser('calendarplus')) {  
 //upcoming version search for 8.2 perhaps patch https://github.com/owncloud/core/pull/17339/files
-\OC::$server->getSearch()->registerProvider('\OCA\TasksPlus\Search\Provider', array('app' => $taskAppName));
-
-
-\OCP\Share::registerBackend(CalendarApp::SHARETODO, '\OCA\TasksPlus\Share\Backend\Vtodo');
-
+	\OC::$server->getSearch()->registerProvider('\OCA\TasksPlus\Search\Provider', array('app' => $taskAppName));
+	\OCP\Share::registerBackend(CalendarApp::SHARETODO, '\OCA\TasksPlus\Share\Backend\Vtodo');
+}
